@@ -175,3 +175,18 @@ class MarkdownPreviewCommand(sublime_plugin.TextCommand):
             new_view.insert(new_edit, 0, html_contents)
             new_view.end_edit(new_edit)
             sublime.status_message('Markdown preview launched in sublime')
+
+
+class MarkdownCopyCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        view = self.window.active_view()
+        if view:
+            if view.substr(view.sel()[0]):
+                contents = view.substr(view.sel()[0])
+                message = u"selection converted and copied to clipboard"
+            else:
+                contents = view.substr(sublime.Region(0, view.size()))
+                message = u"converted and copied to clipboard"
+            md = markdown2.markdown(contents,extras=['footnotes','toc','fenced-code-blocks','cuddled-lists'])
+            sublime.set_clipboard(md)
+            sublime.status_message(message)
